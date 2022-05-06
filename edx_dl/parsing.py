@@ -252,7 +252,7 @@ class ClassicEdXPageExtractor(PageExtractor):
         if len(courses_soup) == 0:
             courses_soup = soup.find_all('div', 'course')
         if len(courses_soup) == 0:
-            courses_soup = soup.find_all('div', 'course audit')
+            courses_soup = soup.find_all('article', 'course audit')
 
         courses = []
 
@@ -263,8 +263,11 @@ class ClassicEdXPageExtractor(PageExtractor):
             course_state = 'Not yet'
             try:
                 # started courses include the course link in the href attribute
-                course_url = BASE_URL + course_soup.a['href']
-                if course_url.endswith('info') or course_url.endswith('info/') or course_url.endswith('course') or course_url.endswith('course/'):
+                if course_soup.a['href'].endswith('home') or course_soup.a['href'].endswith('home/'):
+                    course_url = course_soup.a['href']
+                else:
+                    course_url = BASE_URL + course_soup.a['href']
+                if course_url.endswith('info') or course_url.endswith('info/') or course_url.endswith('course') or course_url.endswith('course/') or course_url.endswith('home') or course_url.endswith('home/'):
                     course_state = 'Started'
                 # The id of a course in edX is composed by the path
                 # {organization}/{course_number}/{course_run}
@@ -430,3 +433,5 @@ def get_page_extractor(url):
 def is_youtube_url(url):
     re_youtube_url = re.compile(r'(https?\:\/\/(?:www\.)?(?:youtube\.com|youtu\.?be)\/.*?)')
     return re_youtube_url.match(url)
+
+
